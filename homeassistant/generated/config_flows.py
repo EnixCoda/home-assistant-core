@@ -175,6 +175,7 @@ FLOWS = {
         "energenie_power_sockets",
         "energyzero",
         "enigma2",
+        "enixcoda",
         "enocean",
         "enphase_envoy",
         "environment_canada",

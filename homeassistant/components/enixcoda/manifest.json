@@ -1,0 +1,14 @@
+{
+  "domain": "enixcoda",
+  "name": "itg1",
+  "codeowners": ["@enixcoda"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://www.home-assistant.io/integrations/enixcoda",
+  "homekit": {},
+  "iot_class": "calculated",
+  "quality_scale": "bronze",
+  "requirements": [],
+  "ssdp": [],
+  "zeroconf": []
+}

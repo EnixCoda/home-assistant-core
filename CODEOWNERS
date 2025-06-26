@@ -434,6 +434,8 @@ build.json @home-assistant/supervisor
 /tests/components/energyzero/ @klaasnicolaas
 /homeassistant/components/enigma2/ @autinerd
 /tests/components/enigma2/ @autinerd
+/homeassistant/components/enixcoda/ @enixcoda
+/tests/components/enixcoda/ @enixcoda
 /homeassistant/components/enocean/ @bdurrer
 /tests/components/enocean/ @bdurrer
 /homeassistant/components/enphase_envoy/ @bdraco @cgarwood @joostlek @catsmanac

@@ -1726,6 +1726,12 @@
       "config_flow": true,
       "iot_class": "local_polling"
     },
+    "enixcoda": {
+      "name": "itg1",
+      "integration_type": "hub",
+      "config_flow": true,
+      "iot_class": "calculated"
+    },
     "enmax": {
       "name": "Enmax Energy",
       "integration_type": "virtual",
