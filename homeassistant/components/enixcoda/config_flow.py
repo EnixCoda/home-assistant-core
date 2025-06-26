@@ -9,7 +9,6 @@ from typing import Any, TypedDict
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigFlow as HAConfigFlow, ConfigFlowResult
-from homeassistant.const import CONF_HOST, CONF_SELECTOR
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 
@@ -17,17 +16,7 @@ from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-STEP_USER_DATA_SCHEMA = vol.Schema(
-    {
-        # user can input multiple strings for his client devices
-        vol.Required(CONF_HOST): vol.All(
-            str, vol.Length(min=1)
-        ),  # Hostname or IP address of the device
-        vol.Required(CONF_SELECTOR): vol.All(
-            str, vol.Length(min=1)
-        ),  # Selector for the client device
-    }
-)
+STEP_USER_DATA_SCHEMA = vol.Schema({})
 
 
 class ConfigFlowData(TypedDict):
@@ -51,7 +40,7 @@ class PlaceholderHub:
         return True
 
 
-async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> ConfigFlowData:
+async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
     """Validate the user input allows us to connect.
 
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
@@ -66,8 +55,6 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> ConfigFlo
     # Return info that you want to store in the config entry.
     return {
         "title": "EnixCoda ITG1",
-        "clients": data[CONF_SELECTOR],
-        "servers": data[CONF_HOST],
     }
 
 
