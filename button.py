@@ -4,6 +4,7 @@ import logging
 import os
 import socket
 import textwrap
+from typing import Final
 
 from homeassistant.components.button import ButtonEntity
 from homeassistant.config_entries import ConfigEntry
@@ -160,10 +161,22 @@ class SIPButton(ButtonEntity):
         _LOGGER.info("SIP button action completed")
 
 
+ELEVATOR_DIRECTION_UP: Final = 3
+ELEVATOR_DIRECTION_DOWN: Final = 4
+
+
 class ElevatorButton(SIPButton):
     """Button to call the elevator."""
 
-    def __init__(self, name: str, client: Host, server: Host) -> None:
+    def __init__(
+        self,
+        name: str,
+        client: Host,
+        server: Host,
+        family: int,
+        floor: int,
+        direction: int,
+    ) -> None:
         """Initialize the Elevator button."""
         super().__init__(
             name="Elevator Button " + name,
@@ -171,15 +184,18 @@ class ElevatorButton(SIPButton):
             client=client,
             server=server,
         )
+        self.family = family
+        self.floor = floor
+        self.direction = direction
 
     def make_sip_message(self) -> str:
         """Create the SIP message for calling the elevator."""
         return make_elevator_sip_message(
             to=self.server.href(),
             elev=0,
-            direct=4,
-            floor=25,
-            family=2,
+            direct=self.direction,
+            floor=self.floor,
+            family=self.family,
             app="elev",
             event="appoint",
             event_url="/elev/appoint",
@@ -189,7 +205,9 @@ class ElevatorButton(SIPButton):
 class UnlockGatewayButton(SIPButton):
     """Button to unlock the gateway."""
 
-    def __init__(self, name: str, client: Host, server: Host) -> None:
+    def __init__(
+        self, name: str, client: Host, server: Host, build: int, family: int, floor: int
+    ) -> None:
         """Initialize the Unlock Gateway button."""
         super().__init__(
             name="Unlock Gateway Button " + name,
@@ -197,14 +215,17 @@ class UnlockGatewayButton(SIPButton):
             client=client,
             server=server,
         )
+        self.build = build
+        self.family = family
+        self.floor = floor
 
     def make_sip_message(self) -> str:
         """Create the SIP message for unlocking the gateway."""
         return make_unlock_sip_message(
             host_id=self.client.id,
-            build=14,
-            floor=25,
-            family=2,
+            build=self.build,
+            floor=self.floor,
+            family=self.family,
             app="talk",
             event="unlock",
             event_url="/talk/unlock",
@@ -228,9 +249,30 @@ async def async_setup_entry(
     """Set up Enixcoda button entities from a config entry."""
     async_add_entities(
         [
-            ElevatorButton("1", client1, server1),
-            UnlockGatewayButton("1", client1, server1),
-            UnlockGatewayButton("2", client1, server2),
-            UnlockGatewayButton("3", client1, server3),
+            ElevatorButton(
+                "1 UP",
+                client=client1,
+                server=server2,
+                family=2,
+                floor=1,
+                direction=ELEVATOR_DIRECTION_UP,
+            ),
+            ElevatorButton(
+                "25 DOWN",
+                client=client1,
+                server=server2,
+                family=2,
+                floor=25,
+                direction=ELEVATOR_DIRECTION_DOWN,
+            ),
+            UnlockGatewayButton(
+                "1", client=client1, server=server1, build=14, family=2, floor=1
+            ),
+            UnlockGatewayButton(
+                "2", client=client1, server=server2, build=14, family=2, floor=2
+            ),
+            UnlockGatewayButton(
+                "3", client=client1, server=server3, build=14, family=2, floor=3
+            ),
         ]
     )
