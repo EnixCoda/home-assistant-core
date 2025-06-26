@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import logging
 from random import randint
-from typing import Any
+from typing import Any, TypedDict
 
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigFlow as HAConfigFlow, ConfigFlowResult
-from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import CONF_HOST, CONF_SELECTOR
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 
@@ -19,29 +19,39 @@ _LOGGER = logging.getLogger(__name__)
 
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
-        vol.Required(CONF_HOST): str,
-        vol.Required(CONF_USERNAME): str,
-        vol.Required(CONF_PASSWORD): str,
+        # user can input multiple strings for his client devices
+        vol.Required(CONF_HOST): vol.All(
+            str, vol.Length(min=1)
+        ),  # Hostname or IP address of the device
+        vol.Required(CONF_SELECTOR): vol.All(
+            str, vol.Length(min=1)
+        ),  # Selector for the client device
     }
 )
 
 
+class ConfigFlowData(TypedDict):
+    """TypedDict for config flow data."""
+
+    title: str
+    clients: list[str]
+    servers: list[str]
+
+
 class PlaceholderHub:
-    """Placeholder class to make tests pass.
+    """Placeholder class to make tests pass."""
 
-    TODO Remove this placeholder class and replace with things from your PyPI package.
-    """
-
-    def __init__(self, host: str) -> None:
+    def __init__(self, clients: list[str], servers: list[str]) -> None:
         """Initialize."""
-        self.host = host
+        self.clients = clients
+        self.servers = servers
 
     async def authenticate(self, username: str, password: str) -> bool:
         """Test if we can authenticate with the host."""
         return True
 
 
-async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
+async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> ConfigFlowData:
     """Validate the user input allows us to connect.
 
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
@@ -53,18 +63,12 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     #     your_validate_func, data[CONF_USERNAME], data[CONF_PASSWORD]
     # )
 
-    hub = PlaceholderHub(data[CONF_HOST])
-
-    if not await hub.authenticate(data[CONF_USERNAME], data[CONF_PASSWORD]):
-        raise InvalidAuth
-
-    # If you cannot connect:
-    # throw CannotConnect
-    # If the authentication is wrong:
-    # InvalidAuth
-
     # Return info that you want to store in the config entry.
-    return {"title": "ECDevice"}
+    return {
+        "title": "EnixCoda ITG1",
+        "clients": data[CONF_SELECTOR],
+        "servers": data[CONF_HOST],
+    }
 
 
 class ConfigFlow(HAConfigFlow, domain=DOMAIN):
