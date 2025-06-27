@@ -12,8 +12,8 @@ _LOGGER = logging.getLogger(__name__)
 
 async def send_sip(server: Host, client: Host, sip_payload: str) -> None:
     """Send a SIP message to the specified server."""
-    try:
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+        try:
             sip_header = make_sip_header(
                 server=server,
                 client=client,
@@ -25,9 +25,34 @@ async def send_sip(server: Host, client: Host, sip_payload: str) -> None:
                 server.href(),
                 sip_message,
             )
-            s.sendto(sip_message.encode(), (server.ip, server.port))
-    except OSError as e:
-        _LOGGER.error("Socket error while sending SIP message", exc_info=e)
+            s.connect((server.ip, server.port))
+            s.sendall(sip_message.encode())
+            data = s.recv(4096)
+            _LOGGER.debug(
+                "Received response from %s: %s",
+                server.href(),
+                data.decode(),
+            )
+        except TimeoutError:
+            _LOGGER.error("Timeout while sending SIP message to %s", server.href())
+        except ConnectionRefusedError:
+            _LOGGER.error("Connection refused by %s", server.href())
+        except ConnectionResetError:
+            _LOGGER.error("Connection reset by %s", server.href())
+        except BrokenPipeError:
+            _LOGGER.error(
+                "Broken pipe error while sending SIP message to %s", server.href()
+            )
+        except ValueError as e:
+            _LOGGER.error("Invalid SIP message format: %s", e)
+        except OSError as e:
+            _LOGGER.error("Failed to send SIP message", exc_info=e)
+        except OSError as e:
+            _LOGGER.error("Socket error while sending SIP message", exc_info=e)
+        except Exception as e:
+            _LOGGER.error("Unexpected error while sending SIP message: %s", e)
+        finally:
+            s.close()
 
 
 def make_sip_header(
