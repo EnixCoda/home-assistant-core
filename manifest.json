@@ -1,0 +1,10 @@
+{
+  "domain": "freemax",
+  "name": "Gate Control",
+  "version": "0.1.0",
+  "codeowners": ["@enixcoda"],
+  "config_flow": true,
+  "iot_class": "assumed_state",
+  "quality_scale": "bronze",
+  "requirements": []
+}
