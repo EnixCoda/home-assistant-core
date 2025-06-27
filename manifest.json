@@ -1,6 +1,7 @@
 {
   "domain": "enixcoda",
   "name": "itg1",
+  "version": "0.1.0",
   "codeowners": ["@enixcoda"],
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/enixcoda",
