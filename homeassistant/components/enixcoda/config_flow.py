@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from random import randint
-from typing import Any, TypedDict
+from typing import Any
 
 import voluptuous as vol
 
@@ -17,27 +17,6 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 STEP_USER_DATA_SCHEMA = vol.Schema({})
-
-
-class ConfigFlowData(TypedDict):
-    """TypedDict for config flow data."""
-
-    title: str
-    clients: list[str]
-    servers: list[str]
-
-
-class PlaceholderHub:
-    """Placeholder class to make tests pass."""
-
-    def __init__(self, clients: list[str], servers: list[str]) -> None:
-        """Initialize."""
-        self.clients = clients
-        self.servers = servers
-
-    async def authenticate(self, username: str, password: str) -> bool:
-        """Test if we can authenticate with the host."""
-        return True
 
 
 async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
@@ -54,7 +33,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
 
     # Return info that you want to store in the config entry.
     return {
-        "title": "EnixCoda ITG1",
+        "title": "ITG1",
     }
 
 
