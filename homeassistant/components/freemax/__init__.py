@@ -1,4 +1,4 @@
-"""The itg1 integration."""
+"""The freemax integration."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ _PLATFORMS: list[Platform] = [Platform.BUTTON]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: MyConfigEntry) -> bool:
-    """Set up itg1 from a config entry."""
+    """Set up freemax from a config entry."""
 
     def _raise_config_entry_error() -> None:
         """Raise ConfigEntryError for failed API validation."""

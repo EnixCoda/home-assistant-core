@@ -1,4 +1,4 @@
-"""Config flow for the itg1 integration."""
+"""Config flow for the freemax integration."""
 
 from __future__ import annotations
 
@@ -16,29 +16,28 @@ from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-STEP_USER_DATA_SCHEMA = vol.Schema({})
+
+def get_default_title(hass: HomeAssistant) -> str:
+    """Get a default title for the integration."""
+    entities = hass.states.async_all(domain_filter=DOMAIN)
+    return f"{DOMAIN} Gateway ({len(entities) + 1})"
 
 
 async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
-    """Validate the user input allows us to connect.
+    """Validate the user input allows us to connect."""
 
-    Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
-    """
+    # find entities from same domain
+    title = data.get("title", "").strip()
+    if not title or not isinstance(title, str):
+        title = get_default_title(hass)
 
-    # If your PyPI package is not built with async, pass your methods
-    # to the executor:
-    # await hass.async_add_executor_job(
-    #     your_validate_func, data[CONF_USERNAME], data[CONF_PASSWORD]
-    # )
-
-    # Return info that you want to store in the config entry.
     return {
-        "title": "ITG1",
+        "title": title,
     }
 
 
 class ConfigFlow(HAConfigFlow, domain=DOMAIN):
-    """Handle a config flow for itg1."""
+    """Handle a config flow for freemax."""
 
     VERSION = 1
 
@@ -49,7 +48,7 @@ class ConfigFlow(HAConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
         if user_input is not None:
             try:
-                identifier = "id" + str(randint(0, 999999))
+                identifier = DOMAIN + "_config_flow_" + str(randint(1000, 9999))
                 info = await validate_input(self.hass, user_input)
             except CannotConnect:
                 errors["base"] = "cannot_connect"
@@ -62,6 +61,12 @@ class ConfigFlow(HAConfigFlow, domain=DOMAIN):
                 await self.async_set_unique_id(identifier)
                 self._abort_if_unique_id_configured()
                 return self.async_create_entry(title=info["title"], data=user_input)
+
+        STEP_USER_DATA_SCHEMA = vol.Schema(
+            {
+                vol.Optional("title", default=get_default_title(self.hass)): str,
+            }
+        )
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
