@@ -187,7 +187,6 @@ homeassistant.components.energenie_power_sockets.*
 homeassistant.components.energy.*
 homeassistant.components.energyzero.*
 homeassistant.components.enigma2.*
-homeassistant.components.enixcoda.*
 homeassistant.components.enphase_envoy.*
 homeassistant.components.eq3btsmart.*
 homeassistant.components.esphome.*
@@ -205,6 +204,7 @@ homeassistant.components.fitbit.*
 homeassistant.components.flexit_bacnet.*
 homeassistant.components.flux_led.*
 homeassistant.components.forecast_solar.*
+homeassistant.components.freemax.*
 homeassistant.components.fritz.*
 homeassistant.components.fritzbox.*
 homeassistant.components.fritzbox_callmonitor.*
