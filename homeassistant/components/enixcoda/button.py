@@ -2,10 +2,10 @@
 
 from typing import Final
 
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
+from .api import MyConfigEntry
 from .elevator_button import ELEVATOR_DIRECTION_DOWN, ElevatorButton
 from .host import Host
 from .unlock_gateway_button import UnlockGatewayButton
@@ -13,7 +13,7 @@ from .unlock_gateway_button import UnlockGatewayButton
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: MyConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up button entities from a config entry."""
@@ -22,6 +22,9 @@ async def async_setup_entry(
     server2: Final = Host(id="14009902", ip="192.168.24.3")
     server3: Final = Host(id="14009903", ip="192.168.24.4")
     client1: Final = Host(id="14002502", ip="192.168.24.57")
+
+    if not entry.runtime_data:
+        raise ValueError("API object is not available in the config entry runtime data")
 
     async_add_entities(
         [
